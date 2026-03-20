@@ -1,20 +1,20 @@
 from flask import Flask
+from services.generation import Generation
+from services.message import HelloWorld
+from services.recognition import Recognition
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
-def mensagem():
-    print("relou uordi")
-    return("relou uordi")
+def Mensagem():
+    return HelloWorld()
 
 @app.route('/gerar-gabarito', methods=['POST'])
-def mensagem():
-    print("Geração de gabarito")
-    return("Geração de gabarito")
+def SheetGeneration():
+    return Generation()
 
 @app.route('/corrigir-gabarito', methods=['POST'])
-def mensagem():
-    print("Correção de gabarito")
-    return("Correção de gabarito")
+def SheetCorrection():
+    return Recognition()
 
 app.run(debug=True, port=3000)
