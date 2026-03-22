@@ -1,0 +1,7 @@
+###
+POST http://127.0.0.1:3000/gerar-gabarito
+Content-Type: application/json
+
+{
+  "testID": "C-2026"
+}
