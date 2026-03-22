@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from services.generator import GerarGabarito
+from services.generator import SheetGeneration
 from services.message import HelloWorld
 from services.recognition import Recognition
 
@@ -10,12 +10,12 @@ def Mensagem():
     return HelloWorld()
 
 @app.route('/gerar-gabarito', methods=['POST'])
-def SheetGeneration():
+def Generation():
     data = request.get_json()
     
-    
-    path = GerarGabarito(
-        testID=data.get("testID")
+    path = SheetGeneration(
+        totalQuestions =  data.get("totalQuestions"),
+        testID = data.get("testID")
     )
     
     return jsonify({"mensagem": "Gabarito gerado!", "path": path}), 201

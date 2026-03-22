@@ -4,7 +4,7 @@ Content-Type: application/json
 // é bom usar o mesmo nome pra poder sempre fazer o overwriting
 
 {
-  "total_questoes": 20,
+  "totalQuestions": 20,
   "alternativas_por_questao": 5,
   "testID": "A-2026"
 }
