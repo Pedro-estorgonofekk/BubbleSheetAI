@@ -1,7 +1,7 @@
 import os
 from PIL import Image, ImageDraw
 
-def GerarGabarito(testID):
+def DesenharLinha():
     ##Variaveis pro desenho
     width, height = 800, 1131
     color = "white"
@@ -13,6 +13,13 @@ def GerarGabarito(testID):
     ##Desenha linha
     draw.line([(40, 50), (760, 50)], fill="Black")
 
+    ##Exportar a img
+    return img
+
+
+def GerarGabarito(testID):
+    ##Importar Imagem
+    img = DesenharLinha()
 
     ##Salvar a img
     path = f"../examples/{testID}.png"
