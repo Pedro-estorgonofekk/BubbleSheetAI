@@ -17,7 +17,7 @@ def Img():
 
 ##Calculo da altura entre as caixas 
 def BoxHeight(totalQuestions):
-    
+    totalQuestions
     return totalQuestions
 
 
@@ -29,11 +29,21 @@ def DrawLine():
     return draw, img
 
 
-##Desenhar as caixas
+##Desenhar a caixa delimitadora:
 def DrawBox():
+    draw, img = DrawLine()
+
+    ##Essas coords serão substituidas por variaveis igual à função abaixo, para poder ajudar na responsividade
+    draw.rectangle([(50, 50), (750, 1081)], outline="black", width=2)
+
+    return draw, img
+
+
+##Desenhar as ancoras
+def DrawAnchor():
 
     ##Variaveis para o desenho (q era pra faciliar)
-    draw, img = DrawLine()
+    draw, img = DrawBox()
     _, _, width, height = Img() 
     padding = 50
     size = 30
@@ -61,7 +71,7 @@ def DrawBox():
 def SaveImg(testID, totalQuestions):
 
     ##Importar Imagem
-    finalImg = DrawBox()
+    finalImg = DrawAnchor()
     path = f"../examples/{testID}.png"
     os.makedirs(os.path.dirname(path), exist_ok=True)
     
