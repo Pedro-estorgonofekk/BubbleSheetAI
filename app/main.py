@@ -15,7 +15,8 @@ def Generation():
     
     path = SheetGeneration(
         totalQuestions =  data.get("totalQuestions"),
-        testID = data.get("testID")
+        testID = data.get("testID"),
+        altsPerQuestion = data.get("altsPerQuestion")
     )
     
     return jsonify({"mensagem": "Gabarito gerado!", "path": path}), 201

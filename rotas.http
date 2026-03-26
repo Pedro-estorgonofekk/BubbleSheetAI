@@ -5,6 +5,6 @@ Content-Type: application/json
 
 {
   "totalQuestions": 20,
-  "alternativas_por_questao": 5,
+  "altsPerQuestion": 5,
   "testID": "A-2026"
 }
