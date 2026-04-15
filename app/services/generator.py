@@ -1,86 +1,67 @@
 import os
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 ##Altura e largura
 width, height = 800, 1131
+margin = 40
+
+##Calculo da altura entre as caixas
+def CalculateBox(totalQuestions, altsPerQuestion):
+    spaceYPerQuestion = 35
+    spaceXPerQuestion = 40
+    spaceTextLeft = 60
+
+    x1 = width - margin
+    y0 = 150
+
+    boxWidth = spaceTextLeft + (altsPerQuestion * spaceXPerQuestion)
+    boxHeight = totalQuestions * spaceYPerQuestion
+
+    x0 = x1 - boxWidth
+    y1 = y0 + boxHeight
+
+    return x0, x1, y0, y1
 
 
-##Geração da Imagem inicial
-def Img():
-
-    ##Imagem A4 em branco
-    img = Image.new("RGB", (width, height), "white")
-    draw = ImageDraw.Draw(img)
-
-    return draw, img
-
-
-##Calculo da altura entre as caixas, ela sera definida com base no numero de questões
-def BoxHeight(totalQuestions):
-    alternativesSpace = 35 # pixels por linha
-    upperPadding = 150
-
-    boxHeight = upperPadding + (totalQuestions * alternativesSpace)
-
-    return boxHeight
-
-
-##Calculo da largura entre as caixas, ela sera definida com base no numero de alternativas
-def BoxWidth():
-    return
-
-##Desenhar a linha
-def DrawLine():
-    draw, img, _, _  = Img()
-    draw.line([(40, 50), (760, 50)], fill="Black")
-
-    return draw, img
+##Desenho do cabeçalho:
+def DrawHeader(draw):
+    draw.line([(margin, 50), (width - margin, 50)], fill="black")
+    draw.text([margin, 60], "Nome:", fill="black")
 
 
 ##Desenhar a caixa delimitadora:
-def DrawBox():
-    draw, img = DrawLine()
+def DrawBox(draw, x0, x1, y0, y1):
 
-    ##Essas coords serão substituidas por variaveis igual à função abaixo, para poder ajudar na responsividade
-    draw.rectangle([(50, 50), (750, 1081)], outline="black", width=2)
+    draw.rectangle([(x0, y0), (x1, y1)], outline="black", width=2)
 
-    return draw, img
+    return draw
 
 
 ##Desenhar as ancoras
-def DrawAnchor():
+def DrawAnchor(draw, x0, x1, y0, y1):
 
     ##Variaveis para o desenho (q era pra faciliar)
-    draw, img = DrawBox()
-    _, _, width, height = Img() 
-    padding = 40
     size = 30
 
     ##Desenha a caixa para a facilitação do reconhecimento
     ##Caixa superior esquerda
-    draw.rectangle([(padding), (padding), (padding + size), (padding + size)], fill="black")
+    draw.rectangle([(x0, y0), (x0 + size, y0 + size)], fill="black")
 
     ##Caixa superior direita, será fixa
-    draw.rectangle([730, 80, 760, 110], fill="black")
+    draw.rectangle([(x1 - size, y0), (x1, y0 + size)], fill="black")
 
     ##Caixa inferior esquerda
-    draw.rectangle([(padding), (height - padding - size), (padding + size), (height - padding)], fill="black")
+    draw.rectangle([(x0, y1 - size), (x0 + size, y1)], fill="black")
 
     ##Caixa inferior direita
-    draw.rectangle([(width - padding - size), height - (padding + size), (width - padding), (height - padding)], fill="black")
-
-    
-    ##Exportar a img
-    return draw, img
+    draw.rectangle([(x1 - size, y1 - size), (x1, y1)], fill="black")
 
 
 ##Desenha as bolhas das alternativas
-def DrawAlternatives(totalQuestions, altsPerQuestion):
-    draw, img = DrawAnchor()
-
-    startX, startY = 100, 200
+def DrawAlternatives(draw, x0, y0, totalQuestions, altsPerQuestion):
+    startX, startY = x0 + 60, y0 + 35 
     spacingX, spacingY = 40, 35
-    bubbleSize = 20
+    bubbleSize = 20  
 
     for q in range(totalQuestions):
         for a in range(altsPerQuestion):
@@ -88,43 +69,37 @@ def DrawAlternatives(totalQuestions, altsPerQuestion):
             y = startY + q * spacingY
             draw.ellipse([(x, y), (x + bubbleSize, y + bubbleSize)],outline="black", width=2)
 
-    return draw, img
 
-
-
-def WriteId(testId, altsPerQuestion, totalQuestions):
-    draw, img = DrawAlternatives(totalQuestions, altsPerQuestion)
-    
-    font = ImageFont.truetype("arial.ttf", 14)
-    bbox = draw.textbbox([0, 0], testId, font=font)
-    txtWidth = bbox[2] - bbox[0]
-
-    cordX = (800 - txtWidth) / 2
-    cordY = (1131 - 40)
-
-
-    draw.text([cordX, cordY], testId, font=font, fill="black",)
-
-    return img
+def WriteId(draw, testId):
+    startY = height - 60
+    draw.text([width / 2, startY], f"Prova: {testId}", fill="black", anchor="mm")
 
 
 ##Salvar a imagem
-def SaveImg(testID, totalQuestions, altsPerQuestion):
-
-    ##Importar Imagem
-    finalImg = WriteId(testID, altsPerQuestion, totalQuestions)
-    path = f"../examples/{testID}.png"
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    
-    finalImg.show()
-    
-    finalImg.save(path, format="PNG")
-    print(f"Gabarito salvo em: {path}")
-    return path
 
 
 ##Gerar a imagem final
 def SheetGeneration(testID, totalQuestions, altsPerQuestion):
-    path = SaveImg(testID, totalQuestions, altsPerQuestion)
+    img = Image.new("RGB", (width, height), "white")
+    draw = ImageDraw.Draw(img)
 
+    # 2. Desenha o cabeçalho
+    DrawHeader(draw)
+
+    # 3. Calcula a matemática da caixa (A mágica da responsividade)
+    x0, y0, x1, y1 = CalculateBox(totalQuestions, altsPerQuestion)
+
+    # 4. Manda os operários desenharem passando as coordenadas
+    DrawBox(draw, x0, y0, x1, y1)
+    DrawAnchor(draw, x0, y0, x1, y1)
+    DrawAlternatives(draw, x0, y0, totalQuestions, altsPerQuestion)
+    WriteId(draw, testID)
+
+    # 5. Salva a imagem
+    path = f"../examples/{testID}.png"
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    img.save(path, format="PNG")
+    print(f"Gabarito salvo em: {path}")
+    
+    img.show()
     return path
