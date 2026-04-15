@@ -20,7 +20,7 @@ def CalculateBox(totalQuestions, altsPerQuestion):
     x0 = x1 - boxWidth
     y1 = y0 + boxHeight
 
-    return x0, x1, y0, y1
+    return x0, y0, x1, y1
 
 
 ##Desenho do cabeçalho:
@@ -30,7 +30,7 @@ def DrawHeader(draw):
 
 
 ##Desenhar a caixa delimitadora:
-def DrawBox(draw, x0, x1, y0, y1):
+def DrawBox(draw, x0, y0, x1, y1):
 
     draw.rectangle([(x0, y0), (x1, y1)], outline="black", width=2)
 
@@ -38,7 +38,7 @@ def DrawBox(draw, x0, x1, y0, y1):
 
 
 ##Desenhar as ancoras
-def DrawAnchor(draw, x0, x1, y0, y1):
+def DrawAnchor(draw, x0, y0, x1, y1):
 
     ##Variaveis para o desenho (q era pra faciliar)
     size = 30
