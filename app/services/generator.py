@@ -1,4 +1,5 @@
 import os
+import time
 from PIL import Image, ImageDraw
 
 ##Altura e largura
@@ -15,7 +16,7 @@ def CalculateBox(totalQuestions, altsPerQuestion):
     y0 = 150
 
     boxWidth = spaceTextLeft + (altsPerQuestion * spaceXPerQuestion)
-    boxHeight = totalQuestions * spaceYPerQuestion
+    boxHeight = (totalQuestions * spaceYPerQuestion) + (35 + spaceYPerQuestion)
 
     x0 = x1 - boxWidth
     y1 = y0 + boxHeight
@@ -25,8 +26,8 @@ def CalculateBox(totalQuestions, altsPerQuestion):
 
 ##Desenho do cabeçalho:
 def DrawHeader(draw):
-    draw.line([(margin, 50), (width - margin, 50)], fill="black")
-    draw.text([margin, 60], "Nome:", fill="black")
+    draw.text([margin, 36], "Nome:", fill="black")
+    draw.line([(margin + 55, 50), (width - margin, 50)], fill="black")
 
 
 ##Desenhar a caixa delimitadora:
@@ -64,6 +65,7 @@ def DrawAlternatives(draw, x0, y0, totalQuestions, altsPerQuestion):
     bubbleSize = 20  
 
     for q in range(totalQuestions):
+        draw.text([x0 + 15, startY + (q * spacingY) + 2], f"{q+1:02d}:", fill="black")
         for a in range(altsPerQuestion):
             x = startX + a * spacingX
             y = startY + q * spacingY
@@ -75,31 +77,29 @@ def WriteId(draw, testId):
     draw.text([width / 2, startY], f"Prova: {testId}", fill="black", anchor="mm")
 
 
-##Salvar a imagem
-
-
 ##Gerar a imagem final
 def SheetGeneration(testID, totalQuestions, altsPerQuestion):
-    img = Image.new("RGB", (width, height), "white")
-    draw = ImageDraw.Draw(img)
+    print(totalQuestions, altsPerQuestion)
+    time.sleep(2)
+    if totalQuestions <= 25 and altsPerQuestion <= 6:
+        img = Image.new("RGB", (width, height), "white")
+        draw = ImageDraw.Draw(img)
 
-    # 2. Desenha o cabeçalho
-    DrawHeader(draw)
+        DrawHeader(draw)
 
-    # 3. Calcula a matemática da caixa (A mágica da responsividade)
-    x0, y0, x1, y1 = CalculateBox(totalQuestions, altsPerQuestion)
+        x0, y0, x1, y1 = CalculateBox(totalQuestions, altsPerQuestion)
 
-    # 4. Manda os operários desenharem passando as coordenadas
-    DrawBox(draw, x0, y0, x1, y1)
-    DrawAnchor(draw, x0, y0, x1, y1)
-    DrawAlternatives(draw, x0, y0, totalQuestions, altsPerQuestion)
-    WriteId(draw, testID)
+        DrawBox(draw, x0, y0, x1, y1)
+        DrawAnchor(draw, x0, y0, x1, y1)
+        DrawAlternatives(draw, x0, y0, totalQuestions, altsPerQuestion)
+        WriteId(draw, testID)
 
-    # 5. Salva a imagem
-    path = f"../examples/{testID}.png"
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    img.save(path, format="PNG")
-    print(f"Gabarito salvo em: {path}")
-    
-    img.show()
-    return path
+        path = f"../examples/{testID}.pdf"
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        img.save(path, format="PDF")
+        print(f"Gabarito salvo em: {path}")
+        
+        img.show()
+        return path
+    else:
+        return "valores muito grande"
