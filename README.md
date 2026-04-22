@@ -18,3 +18,5 @@
   * Executar a aplicação:
 
     * `py main.py`
+
+  * Acesse o arquivo `rotas.http` e solicite a requisição da criação do gabarito
