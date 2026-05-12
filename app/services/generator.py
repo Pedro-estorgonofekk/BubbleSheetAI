@@ -1,5 +1,4 @@
-import os
-import time
+import os, time, qrcode, json 
 from PIL import Image, ImageDraw
 
 ##Altura e largura
@@ -77,6 +76,28 @@ def WriteId(draw, testId):
     draw.text([width / 2, startY], f"Prova: {testId}", fill="black", anchor="mm")
 
 
+def DrawQRCode(img, testID, totalQuestions, altsPerQuestion, y0):
+    data = {
+        "testID": testID,
+        "totalQuestions": totalQuestions,
+        "altsPerQuestion": altsPerQuestion
+    }
+    
+    json_string = json.dumps(data)
+
+    qr = qrcode.QRCode(version=1, box_size=10, border=2)
+    qr.add_data(json_string)
+    qr.make(fit=True)
+    
+    qr_img = qr.make_image(fill_color="black", back_color="white")
+    
+    qr_img = qr_img.resize((200, 200))
+
+    pos_x = margin
+    pos_y = y0
+    
+    img.paste(qr_img, (pos_x, pos_y))
+
 ##Gerar a imagem final
 def SheetGeneration(testID, totalQuestions, altsPerQuestion):
     print(totalQuestions, altsPerQuestion)
@@ -93,6 +114,7 @@ def SheetGeneration(testID, totalQuestions, altsPerQuestion):
         DrawAnchor(draw, x0, y0, x1, y1)
         DrawAlternatives(draw, x0, y0, totalQuestions, altsPerQuestion)
         WriteId(draw, testID)
+        DrawQRCode(img, testID, totalQuestions, altsPerQuestion, y0)
 
         path = f"../examples/{testID}.pdf"
         os.makedirs(os.path.dirname(path), exist_ok=True)
